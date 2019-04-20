@@ -1,0 +1,63 @@
+name:                hscli
+version:             0.1.0.0
+github:              githubuser/hscli
+license:             BSD3
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2019 Author name here
+
+extra-source-files:
+- README.md
+
+description:         Please see the README on Github at <https://github.com/githubuser/hscli#readme>
+
+dependencies:
+- base >= 4.11
+- generic-lens
+- rio
+
+default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - DeriveFunctor
+  - DeriveFoldable
+  - DeriveGeneric
+  - DeriveTraversable
+  - FlexibleContexts
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - Rank2Types
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  hscli-exe:
+    main:                Main.hs
+    source-dirs:         app
+    dependencies:
+    - hscli
+    - optparse-simple
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
