@@ -1,12 +1,11 @@
 module Main (main) where
 
-import Mylude
 import Options.Applicative.Simple
-import Run
-import RIO.Process
+import Smile.App
+import Smile.Prelude
 
-main :: IO ()
-main = do
+parse :: IO Options
+parse = do
   (options, ()) <- simpleOptions
     "0.1"
     "Header for command line arguments"
@@ -18,12 +17,13 @@ main = do
                   )
     )
     empty
-  lo <- logOptionsHandle stderr (optionsVerbose options)
-  pc <- mkDefaultProcessContext
-  withLogFunc lo $ \lf ->
-    let app = App
-          { appLogFunc = lf
-          , appProcessContext = pc
-          , appOptions = options
-          }
-     in runRIO app run
+  pure options
+
+run :: LogC env m => m ()
+run = do
+  logInfo "We're inside the application!"
+
+main :: IO ()
+main = do
+  options <- parse
+  exe options (flip runRIO run)

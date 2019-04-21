@@ -1,4 +1,4 @@
-module Mylude
+module Smile.Prelude
     ( module RIO
     , field
     ) where

@@ -1,18 +1,20 @@
-name:                hscli
+name:                smile
 version:             0.1.0.0
-github:              githubuser/hscli
-license:             BSD3
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2019 Author name here
+github:              ejconlon/smile
+license:             MIT
+author:              Eric Conlon
+maintainer:          ejconlon@gmail.com
+copyright:           2019 Eric Conlon
 
 extra-source-files:
 - README.md
 
-description:         Please see the README on Github at <https://github.com/githubuser/hscli#readme>
+description: An even more opinionated app prelude on top of RIO.
 
 dependencies:
 - base >= 4.11
+- ekg
+- ekg-statsd
 - generic-lens
 - rio
 
@@ -50,11 +52,11 @@ library:
   source-dirs: src
 
 executables:
-  hscli-exe:
+  smile-exe:
     main:                Main.hs
     source-dirs:         app
     dependencies:
-    - hscli
+    - smile
     - optparse-simple
 
     ghc-options:
