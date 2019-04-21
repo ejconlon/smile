@@ -9,13 +9,15 @@ copyright:           2019 Eric Conlon
 extra-source-files:
 - README.md
 
-description: An even more opinionated app prelude on top of RIO.
+description: A very opinionated application framework on top of RIO.
 
 dependencies:
 - base >= 4.11
+- data-has
 - ekg
 - ekg-statsd
 - generic-lens
+- optparse-applicative
 - rio
 
 default-extensions:
@@ -35,6 +37,7 @@ default-extensions:
   - NoImplicitPrelude
   - OverloadedStrings
   - Rank2Types
+  - RecordWildCards
   - TupleSections
   - TypeApplications
   - TypeFamilies
@@ -57,7 +60,7 @@ executables:
     source-dirs:         app
     dependencies:
     - smile
-    - optparse-simple
+    - optparse-applicative
 
     ghc-options:
     - -threaded

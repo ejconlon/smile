@@ -1,29 +1,52 @@
 module Main (main) where
 
-import Options.Applicative.Simple
+import Options.Applicative
 import Smile.App
+import Smile.Core (Core)
+import Smile.Exe (exe)
+import Smile.Logging (LogC)
 import Smile.Prelude
-
-parse :: IO Options
-parse = do
-  (options, ()) <- simpleOptions
-    "0.1"
-    "Header for command line arguments"
-    "Program description, also for command line arguments"
-    (Options
-       <$> switch ( long "verbose"
-                 <> short 'v'
-                 <> help "Verbose output?"
-                  )
-    )
-    empty
-  pure options
 
 run :: LogC env m => m ()
 run = do
   logInfo "We're inside the application!"
 
+data Config = Config
+  { param :: Int
+  } deriving (Generic, Eq, Show)
+
+data Value = Value
+  { signal :: IORef Int
+  } deriving (Generic)
+
+-- BEGIN TemplateHaskell candidate section
+newtype MyApp = MyApp { unMyApp :: App Value }
+  deriving (Generic)
+
+myAppL :: Lens' MyApp (App Value)
+myAppL = field @"unMyApp"
+
+instance Has Core MyApp where
+  hasLens = myAppL . hasLens
+
+instance Has Value MyApp where
+  hasLens = myAppL . appRestL
+-- END TemplateHaskell candidate section
+
+configParser :: Parser Config
+configParser =
+    (Config
+        <$> option auto (
+            long "param"
+            <> short 'p'
+            <> help "some param"
+            )
+    )
+
+initApp :: Config -> Core -> IO MyApp
+initApp config core = do
+  signal <- newIORef (param config)
+  pure (MyApp (mkApp (Value signal) core))
+
 main :: IO ()
-main = do
-  options <- parse
-  exe options (flip runRIO run)
+main = exe configParser initApp (flip runRIO run)
