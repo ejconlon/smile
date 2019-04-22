@@ -5,3 +5,4 @@
 * Allow configurable stats port and host
 * Add statsd publishing
 * Metric registration pattern
+* Other integrations (Wreq/HttpClient/Amazonka)
