@@ -50,7 +50,7 @@ initApp config core = do
 run :: (Has Value env, LogC env m) => m ()
 run = do
   logInfo "We're inside the application!"
-  sigVal <- readRef (hasLens . _signalLens)
+  sigVal <- readRef _signalLens
   logInfo ("Got signal " <> display sigVal)
 
 main :: IO ()
