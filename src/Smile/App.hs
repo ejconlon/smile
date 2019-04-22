@@ -1,6 +1,6 @@
 module Smile.App where
 
-import Smile.Core (Core)
+import Smile.Core    (Core)
 import Smile.Prelude
 
 data App a = App

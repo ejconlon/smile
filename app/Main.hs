@@ -2,11 +2,11 @@ module Main (main) where
 
 import Options.Applicative
 import Smile.App
-import Smile.Core (Core)
-import Smile.Exe (exe)
-import Smile.Logging (LogC)
-import Smile.Refs (readRef)
+import Smile.Core          (Core)
+import Smile.Exe           (exe)
+import Smile.Logging       (LogC)
 import Smile.Prelude
+import Smile.Refs          (readRef)
 
 data Config = Config
   { _param :: Int

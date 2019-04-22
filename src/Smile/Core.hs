@@ -1,17 +1,17 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Smile.Core where
 
-import RIO.Process (HasProcessContext (..), ProcessContext)
+import RIO.Process   (HasProcessContext (..), ProcessContext)
 import Smile.Options (CoreOptions)
 import Smile.Prelude
 
 data Core = Core
-    { _logFunc :: !LogFunc
+    { _logFunc        :: !LogFunc
     , _processContext :: !ProcessContext
-    , _options :: !CoreOptions
+    , _options        :: !CoreOptions
     } deriving (Generic)
 
 $(makeSmileLenses ''Core)

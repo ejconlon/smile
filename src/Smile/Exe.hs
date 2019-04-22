@@ -4,9 +4,9 @@ module Smile.Exe
   ) where
 
 import Options.Applicative (Parser, execParser, info)
-import RIO.Process (mkDefaultProcessContext)
-import Smile.Core (Core (..))
-import Smile.Options (CoreOptions (..), Options (..), optionsParser)
+import RIO.Process         (mkDefaultProcessContext)
+import Smile.Core          (Core (..))
+import Smile.Options       (CoreOptions (..), Options (..), optionsParser)
 import Smile.Prelude
 
 innerExe :: CoreOptions -> (Core -> IO c) -> IO c
@@ -30,4 +30,4 @@ exe parser prepare run = do
     run b
 
 exeBlank :: (Core -> IO c) -> IO c
-exeBlank body = exe (pure ()) (\_ c -> pure c) body
+exeBlank = exe (pure ()) (\_ c -> pure c)

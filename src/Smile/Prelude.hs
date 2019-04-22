@@ -4,11 +4,11 @@ module Smile.Prelude
     , makeSmileLenses
     ) where
 
-import Control.Lens ((.~))
-import Control.Lens.TH (DefName (TopName), lensField, lensRules, makeLensesWith)
-import Data.Has (Has (..))
-import RIO
+import Control.Lens        ((.~))
+import Control.Lens.TH     (DefName (TopName), lensField, lensRules, makeLensesWith)
+import Data.Has            (Has (..))
 import Language.Haskell.TH (DecsQ, Name, mkName, nameBase)
+import RIO
 
 makeSmileLenses :: Name -> DecsQ
 makeSmileLenses = makeLensesWith $ lensRules

@@ -11,7 +11,7 @@ $(makeSmileLenses ''CoreOptions)
 
 data Options a = Options
     { _coreOptions :: CoreOptions
-    , _appOptions :: a
+    , _appOptions  :: a
     } deriving (Eq, Show)
 
 $(makeSmileLenses ''Options)
