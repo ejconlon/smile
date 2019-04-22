@@ -16,9 +16,10 @@ dependencies:
 - data-has
 - ekg
 - ekg-statsd
-- generic-lens
+- lens
 - optparse-applicative
 - rio
+- template-haskell
 
 default-extensions:
   - ConstraintKinds
@@ -37,7 +38,7 @@ default-extensions:
   - NoImplicitPrelude
   - OverloadedStrings
   - Rank2Types
-  - RecordWildCards
+  - TemplateHaskell
   - TupleSections
   - TypeApplications
   - TypeFamilies
@@ -50,6 +51,7 @@ ghc-options:
 - -Wincomplete-uni-patterns
 - -Wpartial-fields
 - -Wredundant-constraints
+- -fno-warn-unused-top-binds
 
 library:
   source-dirs: src

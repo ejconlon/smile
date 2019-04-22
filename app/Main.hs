@@ -5,32 +5,31 @@ import Smile.App
 import Smile.Core (Core)
 import Smile.Exe (exe)
 import Smile.Logging (LogC)
+import Smile.Refs (readRef)
 import Smile.Prelude
 
-run :: LogC env m => m ()
-run = do
-  logInfo "We're inside the application!"
-
 data Config = Config
-  { param :: Int
-  } deriving (Generic, Eq, Show)
+  { _param :: Int
+  } deriving (Eq, Show)
+
+$(makeSmileLenses ''Config)
 
 data Value = Value
-  { signal :: IORef Int
+  { _signal :: IORef Int
   } deriving (Generic)
 
--- BEGIN TemplateHaskell candidate section
-newtype MyApp = MyApp { unMyApp :: App Value }
-  deriving (Generic)
+$(makeSmileLenses ''Value)
 
-myAppL :: Lens' MyApp (App Value)
-myAppL = field @"unMyApp"
+-- BEGIN TemplateHaskell candidate section
+newtype MyApp = MyApp { _unMyApp :: App Value }
+
+$(makeSmileLenses ''MyApp)
 
 instance Has Core MyApp where
-  hasLens = myAppL . hasLens
+  hasLens = _unMyAppLens . hasLens
 
 instance Has Value MyApp where
-  hasLens = myAppL . appRestL
+  hasLens = _unMyAppLens . _restLens
 -- END TemplateHaskell candidate section
 
 configParser :: Parser Config
@@ -45,8 +44,14 @@ configParser =
 
 initApp :: Config -> Core -> IO MyApp
 initApp config core = do
-  signal <- newIORef (param config)
-  pure (MyApp (mkApp (Value signal) core))
+  signal <- newIORef (_param config)
+  pure (MyApp (App (Value signal) core))
+
+run :: (Has Value env, LogC env m) => m ()
+run = do
+  logInfo "We're inside the application!"
+  sigVal <- readRef (hasLens . _signalLens)
+  logInfo ("Got signal " <> display sigVal)
 
 main :: IO ()
 main = exe configParser initApp (flip runRIO run)

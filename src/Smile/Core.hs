@@ -2,25 +2,25 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Smile.Core
-    ( Core (..)
-    ) where
+module Smile.Core where
 
 import RIO.Process (HasProcessContext (..), ProcessContext)
 import Smile.Options (CoreOptions)
 import Smile.Prelude
 
 data Core = Core
-    { logFunc :: !LogFunc
-    , processContext :: !ProcessContext
-    , options :: !CoreOptions
+    { _logFunc :: !LogFunc
+    , _processContext :: !ProcessContext
+    , _options :: !CoreOptions
     } deriving (Generic)
 
+$(makeSmileLenses ''Core)
+
 instance Has Core r => Has LogFunc r where
-    hasLens = hasLens . (field @"logFunc" :: Lens' Core LogFunc)
+    hasLens = hasLens . _logFuncLens
 
 instance Has Core r => Has ProcessContext r where
-    hasLens = hasLens . (field @"processContext" :: Lens' Core ProcessContext)
+    hasLens = hasLens . _processContextLens
 
 instance Has LogFunc r => HasLogFunc r where
     logFuncL = hasLens

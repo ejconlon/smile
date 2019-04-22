@@ -1,25 +1,14 @@
-module Smile.App
-    ( App
-    , appRestL
-    , mkApp
-    ) where
+module Smile.App where
 
 import Smile.Core (Core)
 import Smile.Prelude
 
 data App a = App
-    { rest :: a
-    , core :: Core
-    } deriving (Generic)
+    { _rest :: a
+    , _core :: Core
+    }
 
-mkApp :: a -> Core -> App a
-mkApp = App
-
-appCoreL :: Lens' (App a) Core
-appCoreL = field @"core"
-
-appRestL :: Lens' (App a) a
-appRestL = field @"rest"
+$(makeSmileLenses ''App)
 
 instance Has Core (App a) where
-    hasLens = appCoreL
+    hasLens = _coreLens

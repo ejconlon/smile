@@ -10,22 +10,24 @@ import Smile.Options (CoreOptions (..), Options (..), optionsParser)
 import Smile.Prelude
 
 innerExe :: CoreOptions -> (Core -> IO c) -> IO c
-innerExe options body = do
-  lo <- logOptionsHandle stderr (verbose options)
+innerExe opts body = do
+  lo <- logOptionsHandle stderr (_verbose opts)
   pc <- mkDefaultProcessContext
   withLogFunc lo $ \lf ->
     let core = Core
-          { logFunc = lf
-          , processContext = pc
-          , options = options
+          { _logFunc = lf
+          , _processContext = pc
+          , _options = opts
           }
     in body core
 
 exe :: Parser a -> (a -> Core -> IO b) -> (b -> IO c) -> IO c
 exe parser prepare run = do
   let parserInfo = info (optionsParser parser) mempty
-  Options {..} <- execParser parserInfo
-  innerExe coreOptions (\core -> prepare appOptions core >>= run)
+  opts <- execParser parserInfo
+  innerExe (_coreOptions opts) $ \core -> do
+    b <- prepare (_appOptions opts) core
+    run b
 
 exeBlank :: (Core -> IO c) -> IO c
 exeBlank body = exe (pure ()) (\_ c -> pure c) body

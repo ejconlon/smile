@@ -1,21 +1,20 @@
-module Smile.Options
-    ( CoreOptions (..)
-    , Options (..)
-    , coreOptionsParser
-    , optionsParser
-    ) where
+module Smile.Options where
 
 import Options.Applicative
 import Smile.Prelude
 
 data CoreOptions = CoreOptions
-    { verbose :: !Bool
-    } deriving (Generic, Eq, Show)
+    { _verbose :: !Bool
+    } deriving (Eq, Show)
+
+$(makeSmileLenses ''CoreOptions)
 
 data Options a = Options
-    { coreOptions :: CoreOptions
-    , appOptions :: a
-    } deriving (Generic, Eq, Show)
+    { _coreOptions :: CoreOptions
+    , _appOptions :: a
+    } deriving (Eq, Show)
+
+$(makeSmileLenses ''Options)
 
 coreOptionsParser :: Parser CoreOptions
 coreOptionsParser =
