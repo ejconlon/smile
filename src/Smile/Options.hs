@@ -5,6 +5,7 @@ import Smile.Prelude
 
 data CoreOptions = CoreOptions
     { _verbose :: !Bool
+    , _gcMetrics :: !Bool
     } deriving (Eq, Show)
 
 $(makeSmileLenses ''CoreOptions)
@@ -23,6 +24,11 @@ coreOptionsParser =
             long "verbose"
             <> short 'v'
             <> help "Verbose output?"
+            )
+        <*> switch (
+            long "gc-metrics"
+            <> short 'g'
+            <> help "Register GC metrics?"
             )
     )
 

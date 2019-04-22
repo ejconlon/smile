@@ -8,15 +8,19 @@ import RIO.Process         (mkDefaultProcessContext)
 import Smile.Core          (Core (..))
 import Smile.Options       (CoreOptions (..), Options (..), optionsParser)
 import Smile.Prelude
+import System.Metrics      (newStore, registerGcMetrics)
 
 innerExe :: CoreOptions -> (Core -> IO c) -> IO c
 innerExe opts body = do
   lo <- logOptionsHandle stderr (_verbose opts)
   pc <- mkDefaultProcessContext
+  s <- newStore
+  when (_gcMetrics opts) (registerGcMetrics s)
   withLogFunc lo $ \lf ->
     let core = Core
           { _logFunc = lf
           , _processContext = pc
+          , _store = s
           , _options = opts
           }
     in body core

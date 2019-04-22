@@ -7,6 +7,8 @@ import Smile.Exe           (exe)
 import Smile.Logging       (LogC)
 import Smile.Prelude
 import Smile.Refs          (readRef)
+import System.Metrics      (Store)
+import System.Remote.Monitoring (forkServerWith)
 
 data Config = Config
   { _param :: Int
@@ -47,11 +49,19 @@ initApp config core = do
   signal <- newIORef (_param config)
   pure (MyApp (App (Value signal) core))
 
+prepare :: (Has Store env, LogC env m) => m ()
+prepare = do
+  logInfo "Starting server"
+  store <- view hasLens
+  _ <- liftIO (forkServerWith store "0.0.0.0" 8000)
+  pure ()
+
 run :: (Has Value env, LogC env m) => m ()
 run = do
   logInfo "We're inside the application!"
   sigVal <- readRef _signalLens
   logInfo ("Got signal " <> display sigVal)
+  threadDelay 50000000
 
 main :: IO ()
-main = exe configParser initApp (flip runRIO run)
+main = exe configParser initApp (flip runRIO (prepare >> run))
