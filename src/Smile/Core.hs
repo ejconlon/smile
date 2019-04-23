@@ -13,7 +13,7 @@ data Core = Core
     , _processContext :: !ProcessContext
     , _store          :: !Store
     , _options        :: !CoreOptions
-    } deriving (Generic)
+    }
 
 $(makeSmileLenses ''Core)
 

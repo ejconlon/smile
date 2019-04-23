@@ -1,9 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Smile.Stats
-    ( HasStore (..)
+    ( Counter
+    , HasStore (..)
     , Store
     , forkServer
+    , newCounter
     , registerCounter
     , incCounter
     , readCounter
@@ -11,6 +13,7 @@ module Smile.Stats
 
 import Smile.Prelude
 import System.Metrics (Store)
+import System.Metrics.Counter (Counter)
 import qualified System.Metrics.Counter as C
 import qualified System.Metrics as M
 import System.Remote.Monitoring (forkServerWith)
@@ -24,16 +27,19 @@ forkServer host port = do
     _ <- liftIO (forkServerWith store (encodeUtf8 host) port)
     pure ()
 
-registerCounter :: HasStore env => Text -> Lens' env C.Counter -> RIO env ()
+newCounter :: IO Counter
+newCounter = C.new
+
+registerCounter :: HasStore env => Text -> Lens' env Counter -> RIO env ()
 registerCounter name lenz = do
     store <- view storeLens
     v <- view lenz
     liftIO (M.registerCounter name (C.read v) store)
 
-incCounter :: Lens' env C.Counter -> RIO env ()
+incCounter :: Lens' env Counter -> RIO env ()
 incCounter lenz = view lenz >>= liftIO . C.inc
 
-readCounter :: Lens' env C.Counter -> RIO env Int64
+readCounter :: Lens' env Counter -> RIO env Int64
 readCounter lenz = view lenz >>= liftIO . C.read
 
 -- All stats must start with APPLICATION_ENV.app.NAME

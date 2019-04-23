@@ -7,7 +7,7 @@ import Smile.Exe           (exe)
 import Smile.Logging       (LogR)
 import Smile.Prelude
 import Smile.Refs          (readRef)
-import Smile.Stats         (HasStore (..), forkServer)
+import Smile.Stats
 
 data Config = Config
     { _param :: Int
@@ -15,21 +15,30 @@ data Config = Config
 
 $(makeSmileLenses ''Config)
 
+data Metrics = Metrics
+    { _someCounter :: Counter
+    }
+
+$(makeSmileLenses ''Metrics)
+
 data Domain = Domain
     { _signal :: IORef Int
-    } deriving (Generic)
+    }
 
 $(makeSmileLenses ''Domain)
 
-newtype MyApp = MyApp { _unMyApp :: App Domain }
+newtype MyApp = MyApp { _unMyApp :: App Metrics Domain }
 
 $(makeSmileLenses ''MyApp)
 
-instance HasApp MyApp Domain where
+instance HasApp MyApp Metrics Domain where
     appLens = unMyAppField
 
 instance HasDomain MyApp where
-    domainLens = unMyAppField . restField
+    domainLens = unMyAppField . domainField
+
+instance HasMetrics MyApp where
+    metricsLens = unMyAppField . metricsField
 
 configParser :: Parser Config
 configParser =
@@ -43,11 +52,14 @@ configParser =
 
 initApp :: Config -> Core -> IO MyApp
 initApp config core = do
-    signal <- newIORef (_param config)
-    pure (MyApp (App (Domain signal) core))
+    metrics <- Metrics <$> newCounter
+    domain <- Domain <$> newIORef (_param config)
+    pure (MyApp (App core metrics domain))
 
-prepare :: (HasStore env, LogR env) => RIO env ()
+prepare :: (HasStore env, HasMetrics env, LogR env) => RIO env ()
 prepare = do
+    logInfo "Registering metrics"
+    _ <- registerCounter "some.counter" (metricsLens . someCounterField)
     logInfo "Starting server"
     _ <- forkServer "localhost" 8000
     pure ()
