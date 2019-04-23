@@ -2,17 +2,11 @@ module Smile.Refs where
 
 import Smile.Prelude
 
-have :: Has thing env => RIO env thing
-have = getter <$> ask
+readRef :: Lens' env (IORef a) -> RIO env a
+readRef lenz = view lenz >>= liftIO . readIORef
 
-haveLens :: Has thing env => Lens' thing b -> RIO env b
-haveLens lenz = view (hasLens . lenz)
+writeRef :: Lens' env (IORef a) -> a -> RIO env ()
+writeRef lenz value = view lenz >>= liftIO . flip writeIORef value
 
-readRef :: Has thing env => Lens' thing (IORef a) -> RIO env a
-readRef lenz = haveLens lenz >>= liftIO . readIORef
-
-writeRef :: Has thing env => Lens' thing (IORef a) -> a -> RIO env ()
-writeRef lenz value = haveLens lenz >>= liftIO . flip writeIORef value
-
-modifyRef :: Has thing env => Lens' thing (IORef a) -> (a -> a) -> RIO env ()
-modifyRef lenz f = haveLens lenz >>= liftIO . flip modifyIORef f
+modifyRef :: Lens' env (IORef a) -> (a -> a) -> RIO env ()
+modifyRef lenz f = view lenz >>= liftIO . flip modifyIORef f

@@ -2,10 +2,16 @@
 build:
 	stack build
 
-.PHONY: splices
-splices:
+.PHONY: buildsplices
+buildsplices:
 	stack build --ghc-options='-ddump-splices'
+
+.PHONY: dumpsplices
+printsplices:
 	find .stack-work -iname "*.dump-splices" | xargs -t -L1 cat
+
+.PHONY: splices
+splices: buildsplices printsplices
 
 .PHONY: test
 test:

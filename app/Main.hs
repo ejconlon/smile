@@ -7,32 +7,29 @@ import Smile.Exe           (exe)
 import Smile.Logging       (LogR)
 import Smile.Prelude
 import Smile.Refs          (readRef)
-import System.Metrics      (Store)
-import System.Remote.Monitoring (forkServerWith)
+import Smile.Stats         (HasStore (..), forkServer)
 
 data Config = Config
-  { _param :: Int
-  } deriving (Eq, Show)
+    { _param :: Int
+    } deriving (Eq, Show)
 
 $(makeSmileLenses ''Config)
 
-data Value = Value
-  { _signal :: IORef Int
-  } deriving (Generic)
+data Domain = Domain
+    { _signal :: IORef Int
+    } deriving (Generic)
 
-$(makeSmileLenses ''Value)
+$(makeSmileLenses ''Domain)
 
--- BEGIN TemplateHaskell candidate section
-newtype MyApp = MyApp { _unMyApp :: App Value }
+newtype MyApp = MyApp { _unMyApp :: App Domain }
 
 $(makeSmileLenses ''MyApp)
 
-instance Has Core MyApp where
-  hasLens = _unMyAppLens . hasLens
+instance HasApp MyApp Domain where
+    appLens = unMyAppField
 
-instance Has Value MyApp where
-  hasLens = _unMyAppLens . _restLens
--- END TemplateHaskell candidate section
+instance HasDomain MyApp where
+    domainLens = unMyAppField . restField
 
 configParser :: Parser Config
 configParser =
@@ -46,22 +43,21 @@ configParser =
 
 initApp :: Config -> Core -> IO MyApp
 initApp config core = do
-  signal <- newIORef (_param config)
-  pure (MyApp (App (Value signal) core))
+    signal <- newIORef (_param config)
+    pure (MyApp (App (Domain signal) core))
 
-prepare :: (Has Store env, LogR env) => RIO env ()
+prepare :: (HasStore env, LogR env) => RIO env ()
 prepare = do
-  logInfo "Starting server"
-  store <- view hasLens
-  _ <- liftIO (forkServerWith store "0.0.0.0" 8000)
-  pure ()
+    logInfo "Starting server"
+    _ <- forkServer "localhost" 8000
+    pure ()
 
-run :: (Has Value env, LogR env) => RIO env ()
+run :: (HasDomain env, LogR env) => RIO env ()
 run = do
-  logInfo "We're inside the application!"
-  sigVal <- readRef _signalLens
-  logInfo ("Got signal " <> display sigVal)
-  threadDelay 50000000
+    logInfo "We're inside the application!"
+    sigVal <- readRef (domainLens . signalField)
+    logInfo ("Got signal " <> display sigVal)
+    threadDelay 50000000
 
 main :: IO ()
 main = exe configParser initApp (flip runRIO (prepare >> run))

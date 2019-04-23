@@ -1,30 +1,40 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Smile.Stats where
+module Smile.Stats
+    ( HasStore (..)
+    , Store
+    , forkServer
+    , registerCounter
+    , incCounter
+    , readCounter
+    ) where
 
 import Smile.Prelude
-import Smile.Refs (haveLens)
 import System.Metrics (Store)
 import qualified System.Metrics.Counter as C
 import qualified System.Metrics as M
+import System.Remote.Monitoring (forkServerWith)
 
 class HasStore env where
-    storeL :: Lens' env Store
+    storeLens :: Lens' env Store
 
-instance Has Store env => HasStore env where
-    storeL = hasLens
+forkServer :: HasStore env => Text -> Int -> RIO env ()
+forkServer host port = do
+    store <- view storeLens
+    _ <- liftIO (forkServerWith store (encodeUtf8 host) port)
+    pure ()
 
-registerCounter :: (HasStore env, Has thing env) => Text -> Lens' thing C.Counter -> RIO env ()
+registerCounter :: HasStore env => Text -> Lens' env C.Counter -> RIO env ()
 registerCounter name lenz = do
-    store <- view storeL
-    v <- haveLens lenz
+    store <- view storeLens
+    v <- view lenz
     liftIO (M.registerCounter name (C.read v) store)
 
-incCounter :: Has thing env => Lens' thing C.Counter -> RIO env ()
-incCounter lenz = haveLens lenz >>= liftIO . C.inc
+incCounter :: Lens' env C.Counter -> RIO env ()
+incCounter lenz = view lenz >>= liftIO . C.inc
 
-readCounter :: Has thing env => Lens' thing C.Counter -> RIO env Int64
-readCounter lenz = haveLens lenz >>= liftIO . C.read
+readCounter :: Lens' env C.Counter -> RIO env Int64
+readCounter lenz = view lenz >>= liftIO . C.read
 
 -- All stats must start with APPLICATION_ENV.app.NAME
 -- Statsd based interface

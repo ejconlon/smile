@@ -6,7 +6,7 @@ module Smile.Core where
 import RIO.Process   (HasProcessContext (..), ProcessContext)
 import Smile.Options (CoreOptions)
 import Smile.Prelude
-import System.Metrics
+import Smile.Stats   (HasStore (..), Store)
 
 data Core = Core
     { _logFunc        :: !LogFunc
@@ -17,20 +17,11 @@ data Core = Core
 
 $(makeSmileLenses ''Core)
 
-instance Has Core r => Has LogFunc r where
-    hasLens = hasLens . _logFuncLens
+instance HasCore r => HasLogFunc r where
+    logFuncL = coreLens . logFuncField
 
-instance Has Core r => Has ProcessContext r where
-    hasLens = hasLens . _processContextLens
+instance HasCore r => HasProcessContext r where
+    processContextL = coreLens . processContextField
 
-instance Has Core r => Has Store r where
-    hasLens = hasLens . _storeLens
-
-instance Has Core r => Has CoreOptions r where
-    hasLens = hasLens . _optionsLens
-
-instance Has LogFunc r => HasLogFunc r where
-    logFuncL = hasLens
-
-instance Has Core r => HasProcessContext r where
-    processContextL = hasLens
+instance HasCore r => HasStore r where
+    storeLens = coreLens . storeField
