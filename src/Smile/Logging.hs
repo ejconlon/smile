@@ -1,7 +1,5 @@
-module Smile.Logging
-    ( LogC
-    ) where
+module Smile.Logging where
 
 import Smile.Prelude
 
-type LogC env m = (MonadIO m, MonadReader env m, HasLogFunc env, HasCallStack)
+type LogR env = (HasLogFunc env, HasCallStack)

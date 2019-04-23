@@ -4,7 +4,7 @@ import Options.Applicative
 import Smile.App
 import Smile.Core          (Core)
 import Smile.Exe           (exe)
-import Smile.Logging       (LogC)
+import Smile.Logging       (LogR)
 import Smile.Prelude
 import Smile.Refs          (readRef)
 import System.Metrics      (Store)
@@ -49,14 +49,14 @@ initApp config core = do
   signal <- newIORef (_param config)
   pure (MyApp (App (Value signal) core))
 
-prepare :: (Has Store env, LogC env m) => m ()
+prepare :: (Has Store env, LogR env) => RIO env ()
 prepare = do
   logInfo "Starting server"
   store <- view hasLens
   _ <- liftIO (forkServerWith store "0.0.0.0" 8000)
   pure ()
 
-run :: (Has Value env, LogC env m) => m ()
+run :: (Has Value env, LogR env) => RIO env ()
 run = do
   logInfo "We're inside the application!"
   sigVal <- readRef _signalLens
