@@ -12,4 +12,4 @@ import RIO
 
 makeSmileLenses :: Name -> DecsQ
 makeSmileLenses = makeLensesWith $ lensRules
-    & lensField .~ \_ _ name -> [TopName (mkName (nameBase name ++ "Lens"))]
+    & lensField .~ (\_ _ name -> [TopName (mkName (nameBase name ++ "Lens"))])

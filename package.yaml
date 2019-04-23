@@ -30,6 +30,8 @@ default-extensions:
   - DeriveGeneric
   - DeriveTraversable
   - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
   - GADTs
   - GeneralizedNewtypeDeriving
   - KindSignatures
