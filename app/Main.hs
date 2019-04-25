@@ -27,18 +27,13 @@ data Domain = Domain
 
 $(makeSmileLenses ''Domain)
 
-newtype MyApp = MyApp { _unMyApp :: App Metrics Domain }
-
-$(makeSmileLenses ''MyApp)
-
-instance HasApp MyApp Metrics Domain where
-    appLens = unMyAppField
-
-instance HasDomain MyApp where
-    domainLens = unMyAppField . domainField
+type MyApp = App Metrics Domain
 
 instance HasMetrics MyApp where
-    metricsLens = unMyAppField . metricsField
+    metricsLens = metricsField
+
+instance HasDomain MyApp where
+    domainLens = domainField
 
 configParser :: Parser Config
 configParser =
@@ -54,7 +49,7 @@ initApp :: Config -> Core -> IO MyApp
 initApp config core = do
     metrics <- Metrics <$> newCounter
     domain <- Domain <$> newIORef (_param config)
-    pure (MyApp (App core metrics domain))
+    pure (App core metrics domain)
 
 prepare :: (HasStore env, HasMetrics env, LogR env) => RIO env ()
 prepare = do

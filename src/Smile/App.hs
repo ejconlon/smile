@@ -1,6 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 module Smile.App where
 
 import Smile.Core    (Core, HasCore (..))
@@ -14,5 +11,5 @@ data App m d = App
 
 $(makeSmileLenses ''App)
 
-instance HasApp r m d => HasCore r where
-    coreLens = appLens . coreField
+instance HasCore (App m d) where
+    coreLens = coreField
