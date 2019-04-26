@@ -1,36 +1,95 @@
 module Smile.Options where
 
-import Options.Applicative
+-- import Options.Applicative
+import Smile.EnvParser
 import Smile.Prelude
 
+data StatsServerOptions = StatsServerOptions
+    { _serverEnabled :: Bool
+    , _serverHostname :: Text
+    , _serverPort :: Int
+    } deriving (Eq, Show)
+
+$(makeSmileLenses ''StatsServerOptions)
+
+-- data StatsCollectorOptions = StatsCollectorOptions
+--     { _collectorEnabled :: Bool
+--     , _collectorHostname :: Text
+--     , _collectorPort :: Int
+--     } deriving (Eq, Show)
+
+-- $(makeSmileLenses ''StatsCollectorOptions)
+
 data CoreOptions = CoreOptions
-    { _verbose :: !Bool
-    , _gcMetrics :: !Bool
+    { _verbose :: Bool
+    , _gcMetrics :: Bool
+    , _statsServerOptions :: StatsServerOptions
+    -- , _statsCollectorOptions :: StatsCollectorOptions
     } deriving (Eq, Show)
 
 $(makeSmileLenses ''CoreOptions)
 
 data Options a = Options
-    { _coreOptions :: CoreOptions
-    , _appOptions  :: a
+    { _coreOptions :: !CoreOptions
+    , _appOptions  :: !a
     } deriving (Eq, Show)
 
 $(makeSmileLenses ''Options)
 
-coreOptionsParser :: Parser CoreOptions
-coreOptionsParser =
-    (CoreOptions
-        <$> switch (
-            long "verbose"
-            <> short 'v'
-            <> help "Verbose output?"
-            )
-        <*> switch (
-            long "gc-metrics"
-            <> short 'g'
-            <> help "Register GC metrics?"
-            )
-    )
+-- statsServerOptionsParser :: EnvParser StatsServerOptions
+-- statsServerOptionsParser = do
+--     enabledEnv <- environFlag "SMILE_STATS_SERVER_ENABLED"
+--     hostnameEnv <- environDefault "SMILE_STATS_SERVER_HOSTNAME" "localhost"
+--     portEnv <- environDefault "SMILE_STATS_SERVER_PORT" 8080
+--     pure (StatsServerOptions
+--         <$> switch
+--             ( long "stats-server-enabled"
+--             <> enabledEnv
+--             )
+--         <*> option auto
+--             ( long "stats-server-hostname"
+--             <> hostnameEnv
+--             )
+--         <*> option auto
+--             ( long "server-stats-port"
+--             <> portEnv
+--             )
+--         )
 
-optionsParser :: Parser a -> Parser (Options a)
-optionsParser parser = Options <$> coreOptionsParser <*> parser
+-- statsCollectorOptionsParser :: EnvParser StatsCollectorOptions
+-- statsCollectorOptionsParser =
+--     StatsCollectorOptions
+--         <$> empty
+--         <*> empty
+--         <*> empty
+
+-- coreOptionsParser :: EnvParser CoreOptions
+-- coreOptionsParser = do
+--     verboseEnv <- environFlag "SMILE_VERBOSE"
+--     let verboseParser =
+--             switch
+--             ( long "verbose"
+--             <> short 'v'
+--             <> verboseEnv
+--             <> help "Verbose output?"
+--             )
+--     gcMetricsEnv <- environFlag "SMILE_GC_METRICS"
+--     let gcMetricsParser =
+--             switch
+--             ( long "gc-metrics"
+--             <> short 'g'
+--             <> gcMetricsEnv
+--             <> help "Register GC metrics?"
+--             )
+--     serverParser <- statsServerOptionsParser
+--     pure (CoreOptions
+--         <$> verboseParser
+--         <*> gcMetricsParser
+--         <*> serverParser
+--         )
+
+-- optionsParser :: EnvParser a -> EnvParser (Options a)
+-- optionsParser parser = (liftA2 Options) <$> coreOptionsParser <*> parser
+
+optionsParser :: EnvParser a -> EnvParser (Options a)
+optionsParser = undefined

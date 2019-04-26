@@ -13,18 +13,19 @@ description: A very opinionated application framework on top of RIO.
 
 dependencies:
 - base >= 4.11
+- containers
 - data-has
 - ekg
 - ekg-core
 - ekg-statsd
 - lens
+- mtl
 - optparse-applicative
 - rio
 - template-haskell
 
 default-extensions:
   - ConstraintKinds
-  - DataKinds
   - DeriveFunctor
   - DeriveFoldable
   - DeriveGeneric
@@ -37,14 +38,10 @@ default-extensions:
   - KindSignatures
   - LambdaCase
   - MultiParamTypeClasses
-  - MultiWayIf
   - NoImplicitPrelude
   - OverloadedStrings
   - Rank2Types
   - TemplateHaskell
-  - TupleSections
-  - TypeApplications
-  - TypeFamilies
 
 ghc-options:
 - -Wall

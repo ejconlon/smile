@@ -1,12 +1,21 @@
 module Smile.Prelude
     ( module RIO
+    , ExceptT (..)
+    , Except
+    , MonadError (..)
+    , runExceptT
+    , StateT (..)
+    , State
+    , MonadState (..)
     , makeSmileLenses
     ) where
 
-import Control.Lens        ((.~))
-import Control.Lens.TH     (DefName (TopName), classyRules, lensClass, lensField, makeLensesWith)
-import Data.Char (toLower)
-import Language.Haskell.TH (DecsQ, Name, mkName, nameBase)
+import Control.Monad.Except (ExceptT (..), Except, MonadError (..), runExceptT)
+import Control.Monad.State  (StateT (..), State, MonadState (..))
+import Control.Lens         ((.~))
+import Control.Lens.TH      (DefName (TopName), classyRules, lensClass, lensField, makeLensesWith)
+import Data.Char            (toLower)
+import Language.Haskell.TH  (DecsQ, Name, mkName, nameBase)
 import RIO
 
 makeSmileLenses :: Name -> DecsQ

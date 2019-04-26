@@ -3,6 +3,7 @@ module Main (main) where
 import Options.Applicative
 import Smile.App
 import Smile.Core          (Core)
+import Smile.EnvParser     (EnvParser)
 import Smile.Exe           (exe)
 import Smile.Logging       (LogR)
 import Smile.Prelude
@@ -35,15 +36,20 @@ instance HasMetrics MyApp where
 instance HasDomain MyApp where
     domainLens = domainField
 
-configParser :: Parser Config
-configParser =
-    (Config
-        <$> option auto (
-            long "param"
-            <> short 'p'
-            <> help "some param"
-            )
-    )
+configParser :: EnvParser Config
+configParser = undefined
+
+-- configParser :: EnvParser Config
+-- configParser = do
+--     paramEnv <- environDefault "MAIN_PARAM" 1
+--     pure (Config
+--         <$> option auto (
+--             long "param"
+--             <> short 'p'
+--             <> help "some param"
+--             <> paramEnv
+--             )
+--         )
 
 initApp :: Config -> Core -> IO MyApp
 initApp config core = do
