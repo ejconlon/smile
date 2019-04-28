@@ -4,10 +4,9 @@ import Data.Map (Map)
 -- import qualified Data.Map as Map
 -- import qualified RIO.Text as Text
 import Smile.Prelude
+import Smile.Selective
 -- import System.Environment (getEnvironment)
 -- import Text.Read (readEither)
-
--- Implementing https://github.com/pcapriotti/optparse-applicative/issues/118#issuecomment-67329552
 
 type Env = Map Text Text
 
@@ -19,31 +18,22 @@ data Field a = Field
     , _envVar :: Maybe Text
     , _metaVar :: Maybe Text
     , _help :: Maybe Text
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Functor)
 
 $(makeSmileLenses ''Field)
 
-win :: Maybe a -> Maybe a -> Maybe a
-win _ y@(Just _) = y
-win x Nothing = x
+field :: Field a
+field = Field Nothing Nothing Nothing Nothing Nothing Nothing Nothing
 
-instance Semigroup (Field a) where
-    (Field a1 b1 c1 d1 e1 f1 g1) <> (Field a2 b2 c2 d2 e2 f2 g2) =
-        Field (win a1 a2) (win b1 b2) (win c1 c2) (win d1 d2) (win e1 e2) (win f1 f2) (win g1 g2)
-
-instance Monoid (Field a) where
-    mempty = Field Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-
-data SomeField where
-    SomeField :: Field a -> SomeField
-
-newtype EnvParser a = EnvParser (Maybe a)
+newtype EnvParser a = EnvParser
+    { unEnvParser :: FreeSelective Ord (DefMap Field) Field a
+    } deriving (Functor, Applicative)
 
 emptyEnvParser :: EnvParser ()
-emptyEnvParser = EnvParser (Just ())
+emptyEnvParser = pure ()
 
-getAndRunEnvParser :: EnvParser a -> IO a
-getAndRunEnvParser = undefined
+getAndRunEnvParser :: Monad m => EnvParser a -> m a  -- Don't forget the nat
+getAndRunEnvParser = error "hi"
 
 -- data Extractor m z a = Extractor
 --     { _field :: Field a

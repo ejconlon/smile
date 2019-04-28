@@ -14,7 +14,6 @@ description: A very opinionated application framework on top of RIO.
 dependencies:
 - base >= 4.11
 - containers
-- data-has
 - ekg
 - ekg-core
 - ekg-statsd
@@ -60,8 +59,18 @@ executables:
   smile-exe:
     main:                Main.hs
     source-dirs:         app
+    ghc-options: -threaded -rtsopts "-with-rtsopts=-N -T"
     dependencies:
     - smile
     - optparse-applicative
 
+tests:
+  smile-test:
+    main:                Tasty.hs
+    source-dirs:         test
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N -T"
+    dependencies:
+    - smile
+    - tasty
+    - tasty-discover
+    - tasty-hunit
