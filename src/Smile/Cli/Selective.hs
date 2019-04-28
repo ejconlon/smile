@@ -5,7 +5,6 @@ module Smile.Cli.Selective where
 import Data.Functor.Compose
 import GHC.Exts (Constraint)
 import Smile.Prelude
-import qualified Data.Map as Map
 
 -- | Something weaker than `Profunctor g`, like `forall x. Functor (g x)`
 -- I don't know if it already exists somewhere, but it's easy enough to define it here.
@@ -57,29 +56,6 @@ appSelector = Selector $ \nat x y -> nat (outFun y) <*> nat x
 -- | This is a really complicated reimplementation of `flip (<*>)`.
 runAppSelector :: Applicative m => (forall x. f x -> m x) -> f a -> f (a -> b) -> m b
 runAppSelector nat x y = (unSelector appSelector) nat x (inFun y)
-
-newtype DefName = DefName { unDefName :: Text } deriving (Eq, Show, Display, Ord, IsString)
-
-data DefMap f a b = DefMap
-    { _defMapName :: DefName
-    , _defMapChoices :: Map a (f b)
-    }
-
-instance Functor f => NatFunctor (DefMap f) where
-    nrmap f (DefMap n c) = DefMap n (fmap (fmap f) c)
-
-$(makeSmileLenses ''DefMap)
-
--- | This is a more interesting one. Your free Selective structure can
--- embed choices in `Map`s (hence the `Ord` constraint on keys) that we
--- can statically analyze. We bail out of interpretation on missing keys
--- (hence the `MonadError` constraint on the interpretation monad).
-defMapSelector :: Selector (MonadError DefName) Ord (DefMap f) f
-defMapSelector = Selector $ \nat x (DefMap n y) -> do
-    a <- nat x
-    case Map.lookup a y of
-        Nothing -> throwError n
-        Just z -> nat z
 
 -- | Not a direct encoding of a free Selective; instead has some knots Selector will untie.
 data FreeSelective (c :: * -> Constraint) (g :: * -> * -> *) (f :: * -> *) (a :: *) where

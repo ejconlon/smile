@@ -1,10 +1,10 @@
 .PHONY: build
 build:
-	stack build
+	stack build --test --no-run-tests
 
 .PHONY: buildsplices
 buildsplices:
-	stack build --ghc-options='-ddump-splices'
+	stack build --test --no-run-tests --ghc-options='-ddump-splices'
 
 .PHONY: dumpsplices
 printsplices:
