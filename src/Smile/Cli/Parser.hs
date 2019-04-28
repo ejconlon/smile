@@ -5,10 +5,7 @@ import qualified RIO.Text as Text
 import Smile.Prelude
 import Smile.Cli.Fields
 import Smile.Cli.Selective
-import qualified System.Environment as Env
 import Text.Read (readEither)
-
-type Env = Map Text Text
 
 newtype DefName = DefName { unDefName :: Text } deriving (Eq, Show, Display, Ord, IsString)
 
@@ -55,9 +52,6 @@ execParser = error "TODO execParser"
 
 -- textField :: FromText a => Field a -> Parser a
 -- textField = rawTextField fromText
-
-getEnv :: IO Env
-getEnv = Map.fromList . fmap (\(a, b) -> (Text.pack a, Text.pack b)) <$> Env.getEnvironment
 
 class FromText a where
     fromText :: Text -> Either Text a

@@ -1,10 +1,7 @@
 module Smile.Cli.Args where
 
-import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
 import qualified RIO.Text as Text
 import Smile.Prelude
-import qualified System.Environment as Env
 
 data Arg = Arg Int (Maybe Text) deriving (Eq, Show)
 
@@ -44,6 +41,3 @@ patToArg p =
         ShortPat u -> Arg 1 (Just u)
         LongPat u -> Arg 2 (Just u)
         DoubleDashPat -> Arg 2 Nothing
-
-getArgs :: IO (Seq Arg)
-getArgs = Seq.fromList . fmap (textToArg . Text.pack) <$> Env.getArgs
