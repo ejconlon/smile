@@ -1,9 +1,8 @@
 module Main (main) where
 
-import Options.Applicative
 import Smile.App
+import Smile.Cli.Parser    (Parser)
 import Smile.Core          (Core)
-import Smile.EnvParser     (EnvParser)
 import Smile.Exe           (exe)
 import Smile.Logging       (LogR)
 import Smile.Prelude
@@ -36,10 +35,10 @@ instance HasMetrics MyApp where
 instance HasDomain MyApp where
     domainLens = domainField
 
-configParser :: EnvParser Config
-configParser = undefined
+configParser :: Parser Config
+configParser = error "TODO configParser"
 
--- configParser :: EnvParser Config
+-- configParser :: Parser Config
 -- configParser = do
 --     paramEnv <- environDefault "MAIN_PARAM" 1
 --     pure (Config

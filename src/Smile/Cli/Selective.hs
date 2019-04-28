@@ -1,6 +1,6 @@
 -- | Fun inspired by Selective
 -- http://hackage.haskell.org/package/selective
-module Smile.Selective where
+module Smile.Cli.Selective where
 
 import Data.Functor.Compose
 import GHC.Exts (Constraint)

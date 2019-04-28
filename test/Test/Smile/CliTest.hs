@@ -1,6 +1,5 @@
-module Test.Smile.EnvParserTest where
+module Test.Smile.CliTest where
 
-import Smile.EnvParser
 import Smile.Prelude
 import Test.Tasty
 import Test.Tasty.HUnit

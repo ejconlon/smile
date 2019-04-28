@@ -3,8 +3,8 @@ module Smile.Exe
   , exeBlank
   ) where
 
-import Smile.EnvParser     (EnvParser, emptyEnvParser, getAndRunEnvParser)
 import RIO.Process         (mkDefaultProcessContext)
+import Smile.Cli.Parser    (Parser, execParser)
 import Smile.Core          (Core (..))
 import Smile.Options       (CoreOptions (..), Options (..), optionsParser)
 import Smile.Prelude
@@ -25,12 +25,12 @@ innerExe opts body = do
           }
     in body core
 
-exe :: EnvParser a -> (a -> Core -> IO b) -> (b -> IO c) -> IO c
+exe :: Parser a -> (a -> Core -> IO b) -> (b -> IO c) -> IO c
 exe parser prepare run = do
-  opts <- getAndRunEnvParser (optionsParser parser)
+  opts <- execParser (optionsParser parser)
   innerExe (_coreOptions opts) $ \core -> do
     b <- prepare (_appOptions opts) core
     run b
 
 exeBlank :: (Core -> IO c) -> IO c
-exeBlank = exe emptyEnvParser (\_ c -> pure c)
+exeBlank = exe (pure ()) (\_ c -> pure c)

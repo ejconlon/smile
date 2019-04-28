@@ -1,7 +1,6 @@
 module Smile.Options where
 
--- import Options.Applicative
-import Smile.EnvParser
+import Smile.Cli.Parser
 import Smile.Prelude
 
 data StatsServerOptions = StatsServerOptions
@@ -88,8 +87,8 @@ $(makeSmileLenses ''Options)
 --         <*> serverParser
 --         )
 
--- optionsParser :: EnvParser a -> EnvParser (Options a)
--- optionsParser parser = (liftA2 Options) <$> coreOptionsParser <*> parser
+coreOptionsParser :: Parser CoreOptions
+coreOptionsParser = error "TODO coreOptionsParser"
 
-optionsParser :: EnvParser a -> EnvParser (Options a)
-optionsParser = undefined
+optionsParser :: Parser a -> Parser (Options a)
+optionsParser parser = Options <$> coreOptionsParser <*> parser
